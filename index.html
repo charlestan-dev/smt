@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8" />
+    <title>IPTV 播放器</title>
+    <link href="https://vjs.zencdn.net/8.5.2/video-js.css" rel="stylesheet" />
+    <style>
+        body { font-family: sans-serif; padding: 20px; display: flex; flex-direction: row; gap: 20px; }
+        #channel-list { width: 300px; max-height: 90vh; overflow-y: auto; border-right: 1px solid #ccc; padding-right: 10px; }
+        .channel button { padding: 5px 10px; margin: 5px 0; width: 100%; text-align: left; }
+        #video-box { flex: 1; }
+        #search { width: 100%; padding: 8px; margin-bottom: 10px; }
+    </style>
+</head>
+<body>
+    <div id="channel-list">
+        <input type="text" id="search" placeholder="🔍 搜索频道..." oninput="filterChannels()" />
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=jade_twn')">翡翠台</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=Jade_xue')">翡翠台 backup</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=inews_twn')">iNews 新闻台</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=j2_twn')">J 2</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=pearl_twn')">珍珠台</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=hkphoenix_twn')">凤凰香港</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=hoycaijing_twn')">HOY资讯台</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=rhk31_twn')">RHK 31</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=viu1_twn')">VIUTV1</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=rhk32_twn')">RHK 32</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=phoenixtv_hd')">凤凰卫视</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=phoenixinfo_hd')">凤凰资讯</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=viusix_twn')">Viu6</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=cctv1')">CCTV-1 综合 HD</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=cctv2')">CCTV-2 财经</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=cctv3')">CCTV-3 综艺 HD</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=cctv4')">CCTV-4 中文国际</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=Cctv4')">CCTV4 新闻台</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=cctv5')">CCTV-5 体育频道</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=cctv5plus')">CCTV-5+ 体育赛事 HD</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=cctv6')">CCTV-6</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=cctv7')">CCTV-7 军事农业</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=cctv8hd')">CCTV-8 电视剧 HD</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=cctv9hd')">CCTV-9 记录 HD</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=cctv10hd')">CCTV-10 科教 HD</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=cctv11')">CCTV-11 戏曲</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=cctv12')">CCTV-12 社会与法</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=cctv13')">CCTV-13 新闻频道</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=cctv14')">CCTV-14 少儿</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=cctv6')">CCTV-6</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=cctv15')">CCTV-15 音乐</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=hunan_twn')">湖南卫视</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=zhejiang_twn')">浙江卫视</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=jiangsu_twn')">江苏卫视</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=shenzhen')">深圳卫视</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=fujian')">福建东南卫视</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=nanfang_twn')">广东南方卫视</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=guangdongweishi_twn')">广东卫视</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=beijing')">北京卫视</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=zhujiang')">珠江台</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=guangxi')">广西卫视</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=hubei')">湖北卫视</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=sichuan_twn')">四川卫视</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=dongfangweishi_twn')">东方卫视</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=CGTN')">CGTN</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=go_assp1')">Astro Premier League 1</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=go_assp1x')">Astro EPL 1 backup</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=go_assp2')">Astro Premier League 2</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=go_assp3')">Astro Grandstand</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=go_assp4')">Astro Football</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=go_sportsplus')">Astro Sports Plus</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=go_badminton1')">Astro Badminton 1</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=go_badminton2')">Astro Badminton 2</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=go_assp5')">Astro W-Sports</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=Assp1')">Supersports 1</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=Assp2')">Supersports 2</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=Assp3')">Supersports 3</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=Assp4')">Supersports 4</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=Wwe')">WWE</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=Fs')">Fight Sports</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=Nba')">NBA TV</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=Acricket')">Astro Cricket</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=Agolf')">Astro Golf</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=6fac0aaead')">Tnt Sports 1</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=d9a76a79cc')">TNT Sports 2</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=5fea4d73db')">TNT Sports 3</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=tntsport4')">TNT Sports 4</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=ten1_raj')">Sony Ten 1</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=ten2_raj')">Sony Ten 2</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=ten3_raj')">Sony Ten 3</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=go_spotv')">SPOTV 1 HD</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=go_spotv2')">SPO TV 2</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=tiankongf1')">Skysports F1</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=tiankongcricket')">Skysports Cricket</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=tiankongepl')">Skysports EPL</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=tiankongmain')">Skysports Main Event</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=tiankongnews')">Skysports News</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=tiankongmix')">Skysports Mix</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=eltasport2_twn')">爱尔达体育2台</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=eltasport3_twn')">爱尔达体育3台</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=Rugbypasstv')">Rugby Pass TV</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=Rtmsport')">RTM Sports HD</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=Arena')">Arena</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=Arena2')">Arena 2</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=Bolaarena1')">BolaArena 1</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=Bolaarena2')">BolaArena 2</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=Astrobein1')">Astro Beinsports 1</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=Astrobein2')">Astro Beinsports 2</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=Astrobein3')">Astro Beinsports 3</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=tvbs_n')">TVBS News 新闻台</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=tvbshuanle_twn')">TVBS 欢乐台 （备份）</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=tvbs')">TVBS HD</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=ctinews')">中天新闻 HD</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=ctient')">中天娱乐 CTI Entertaiment</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=ctizhonghe')">中天综合 CTI Metro</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=ctiasia_twn')">中天亚洲台</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=ttv_taiwan')">台视 TTV HD</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=ttvnews_twn')">台视新闻台</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=ttvzhonghe')">台视综合台</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=zhongshihd_twn')">中视 HD</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=zhongshinews_twn')">中视新闻台</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=ftvhd_taiwan')">民视 HD</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=ftvnew_taiwan')">民视新闻台 FTV News</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=ftvtaiwan_twn')">民视台湾台</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=ctshd_twn')">华视 CTS HD</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=ctv18_twn')">公视 CTV</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=badafirst')">八大第一 GTV First</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=badazhonghe')">八大综合 GTV Metro</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=badadrama')">八大戏剧 GTV Drama</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=badaentertain')">八大娱乐 GTV Entertainment</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=hbohd_twn')">HBO_HD</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=hbohit_twn')">HBO_HITS</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=hollywoodmovies_twn')">Hollywood Movies</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=sanlitaiwan')">三立台湾 Sanli Taiwan</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=sanlixiju_twn')">三立戏剧台</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=sanlizhonghe')">三立综合 Sanli Metro</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=sanlidouhui')">三立都会台</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=ettvnews')">东森新闻 ETTV News</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=cinemax_twn')">CINEMAX</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=ettvzhonghe')">东森综合 ETTV Metro</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=ettvdrama')">东森戏剧 ETTV Drama</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=ettvsuper')">东森超视</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=ettvcaijing_twn')">东森财经新闻 ETTV Business</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=huanyutaiwan_twn')">寰宇财经</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=huanyuxinwen_twn')">寰宇新闻台</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=ctv2_twn')">公视2</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=daai_twn')">大爱1台</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=feifannews_twn')">非凡新闻台</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=lunghuaxiju_twn')">龙华戏剧 Lunghua Drama</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=lunghuajingdian_twn')">龙华经典台</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=lunghuaidol_twn')">龙华偶像</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=axn_twn')">AXN Taiwan</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=jingtianintl_twn')">靖天国际台</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=niandainews_twn')">年代新闻</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=videolandjapan')">纬来日本台</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=videolandmovie')">纬来电影台</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=videolandsport')">纬来体育台</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=videolandzonghe')">纬来综合台</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=videolandyule')">纬来育乐</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=videolandspecial_twn')">纬来精彩</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=good2_twn')">好消息 2</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=daai2_twn')">大爱2台</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=afc_twn')">亚洲美食</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=foodplanet_twn')">美食星球</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=tlc_twn')">亚洲旅游 TLC Asia</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=ettvmovie')">东森电影 ETTV Movie</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=arirang_twn')">阿里郎 Arirang</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=bosisport1_twn')">博斯运动 1</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=bosisport2_twn')">博斯运动 2</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=bosigolf2_twn')">博斯高球2 HD</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=bositennis_twn')">博斯网球 HD</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=ettvwestern')">东森洋片 ETTV Western</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=lunghuawestern_twn')">龙华洋片 Lunghua Western</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=bosiunlimited_twn')">博斯无限</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=mtvhd_twn')">MTV Live</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=lungxiangtime_twn')">龙详时代</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=eyetvtravel_twn')">EYETV 旅游</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=jingtiancartoon_twn')">靖天卡通台</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=eyetvxiju_twn')">EYETV 戏剧</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=weishichinese_twn')">卫视中文台 Star Movies Chinese</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=yoyo_twn')">东森幼幼 Yoyo TV</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=weishimovie_twn')">卫视电影台</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=meiyamovie_twn')">美亚电影</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=eltayingju_twn')">爱尔达影剧台</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=eltazonghe_twn')">爱尔达综合台</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=xingwei_movie')">星卫电影</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=asiatravel_twn')">AFC 亚洲旅游台</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=Cinemax')">Cinemax</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=Animax')">Animax</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=moviesnow_raj')">Movies Now HD</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=starmovies_raj')">Star Movies HD</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=Hbofamily')">HBO Family</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=Hits')">Hits</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=WarnerTV')">Warner TV</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=Hbo')">HBO HD</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=Hbosignature')">HBO Signature</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=Hbohitshd')">HBO Hits</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=Weishimovie')">SCM</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=Dreamworks')">Dreamworks</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=Thrill')">Thrill</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=Hitsmovie')">Hits Movie</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=One')">One</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=Tvnmovie')">tvN Movie</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=Celestial2')">Celestial Classic</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=Celestialindo')">Celestial Movies HD</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=Axn')">Axn HD</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=Paramountnetwork')">Paramount Network</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=Kplus')">Astrol Kplus</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=Rockaction')">Rock Actions</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=Rockentertain')">Rock Entertainment</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=natgeohd_twn')">Natgeo_HD</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=natgeowild_twn')">NatGeo_Wild HD</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=animalplanet_twn')">Animal_Planet</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=discoverytwn_twn')">Discovery Asia</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=ci_twn')">CI</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=discoveryhd_twn')">Discovery HD</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=Natgeo')">NatGeo HD</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=fashiontv_twn')">Fashion TV</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=History')">History</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=bbcearth_twn')">BBC Earth HD</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=bbclifestyle_twn')">BBC Earth Lifestyle</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=Natgeowild')">NatGeo Wild HD</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=AnimalPlanet')">Animal Planet (Eng)</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=Tlc')">TLC</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=Foodnetwork')">Foodnetwork Hd</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=HGTV')">HGTV</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=skynews_twn')">Skynews</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=abcnews_glo')">ABC News</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=cbshd_glo')">CBS HD</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=cbsn_glo')">CBSN HD</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=france24_twn')">France 24</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=dw_twn')">DW (Deutsch)</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=nhkworld_japan')">NHK World</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=foxnews_twn')">Fox News</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=Cnn')">CNN International</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=cnn_twn')">CNN backup</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=cnbc_twn')">CNBC</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=cna')">CNA</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=bbcnews_twn')">BBC World News</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=Bbcnews')">BBC World News</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=bloomberg_twn')">Bloomberg News</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=aljazeera_twn')">Al-Jazeera</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=Babytv')">Baby TV Eng</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=Cbeebies')">CBeebies</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=KidsTV')">Kids TV</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=momo1_twn')">Momo TV</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=babytv_twn')">Baby TV</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=MiaoMi')">MiaoMi</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=Cn')">Cartoon Network</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=Nickelodeon')">Nickelodeon</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=Nickjr')">Nick Jr</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=Channel5HD')">Channel 5</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=Channel8HD')">Channel 8</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=Suria')">Suria</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=ChannelU')">Channel U</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=Vasantham')">Vasantham</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=cna_twn')">CNA backup</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=Mewatch_ch5')">MeWatch Ch 5</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=Mewatch_ch8')">MeWatch Ch 8</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=Mewatch_chU')">MeWatch Ch U</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=Mewatch_Suria')">MeWatch Suria</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=Mewatch_Vasantham')">MeWatch Vasantham</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=Mewatch_cna')">MeWatch CNA</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=TV1')">TV1</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=TV1_backup')">TV1 backup</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=TV2')">TV2</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=TV3')">TV3</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=TV3_mega')">TV3 SD</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=NTV7')">NTV7</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=TV8')">TV8</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=TV9')">TV9</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=Ria-0')">Ria</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=Ria_backup')">Ria-3</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=Alhijrah')">Al-Hijrah</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=Alhijrah_backup')">Al-Hijrah backup</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=Awani')">Awani</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=Bernama')">Bernama</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=Prima-0')">Prima</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=AAprima1')">Prima backup</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=AAprima')">Prima backup 2</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=Ceria')">Ceria</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=AstroMTV')">Astro MTV</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=quran_mido')">Mecca Live HD</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=sunnah_mido')">Madinah HD</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=Oasis')">Oasis</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=Siar')">Siar</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=AAcitra')">Citra</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=AAcitra1')">Citra backup</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=Sensasi')">Sensasi</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=Aura')">Aura</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=Rania')">Rania</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=KBS')">KBS World</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=Boo')">Boo</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=Dsangat')">Awesome TV</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=Asonypix')">Astro Sonypix</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=SetOne')">Sony HD</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=TVN')">TvN</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=AEC')">AEC</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=Wlt')">华丽台 HD （Wah Lai Toi）</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=Huahee')">欢喜台 HD （Hua Hee Tai）</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=Quanjia')">Astro QJ</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=Tvbjade')">TVB Jade</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=Tvbasia')">TVB Asia</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=Tvbentertainment')">TVB Entertainment</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=Tvbclassic')">TVB Classic</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=Aodhd')">AOD</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=Xinhe')">TVB 星河台 Xing He</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=Qiyi')">爱奇艺 iQiyi</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=Goshop')">Goshop</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=Celestial')">Celestial Movies HD</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=Astro_lol')">Astro LOL</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=Rusi')">Astro Rusi</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=Wion')">WION</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=Rtmasean')">RTM Asean</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=TVRI')">TVRI National</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=Rcti')">RCTI</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=Kompass')">Kompass TV</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=BeritaSatu_eko')">Berita Satu</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=Indosiar')">Indosiar HD</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=Antv')">AnTV</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=Mnctv')">MNC TV</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=Trans7_eko')">Trans 7</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=Transtv')">Transtv</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=JTV_eko')">JTV</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=metrotv_eko')">Metro TV</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=SCTV')">SCTV</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=Tvone')">Tvone</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=TVMU_eko')">TVMU</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=Gtv')">GTV</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=Rtv')">RTV</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=JakTV')">Jak TV</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=Inewstv')">iNews TV</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=DaaiTV')">Daai TV</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=NetTV')">Net TV</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=Ewtn')">EWTN</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=AlQuran')">AlQuran AlKareem</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=TawafTV')">Tawaf TV</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=VisionPrime')">Vision Prime</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=MuslimTV')">Muslim TV</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=MusicTV')">Music TV</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=Lifestyle')">Lifestyle&Fashion</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=Entertain')">Entertain</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=Suntv')">Sun TV HD</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=Starvijay')">Star Vijay</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=Colorstam')">Colors Tamil</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=Sunmusic')">Sun Music</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=Sunlife')">Astro Sunlife</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=Vaanavil')">Astro Vaanavil</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=Zeetamil')">Zee Tamil</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=Zeebusiness')">Zee Business</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=news18tamil_raj')">News 18 Tamil</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=Adithya')">Adithya</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=Makkaltv')">Makkal TV</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=Zeeaction')">Zee Action</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=Astroktv')">Astro KTV</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=Zeetvhd')">Zee TV HD</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=Zeecinemahd')">Zee Cinema HD</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=Colorhd')">Color HD</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=Starplushd')">Starplus HD</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=Npicture')">Picture HD</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=Zeenews')">Zee News</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=asianet_raj')">Asianet</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=asianetnews_raj')">Asianet News</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=discoveryworldtam_raj')">Discovery World Tamil</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=historytam_raj')">History Tamil</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=natgeotamil_raj')">NatGeo Tamil</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=natgeowildtamil_raj')">Natgeo Wild Tamil</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=discoverykidtamil_raj')">Discovery Kids Tamil</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=discoverytamil_raj')">Discovery Tamil</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=sonyyaytam_raj')">Sony Yay Tamil</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=suntv_raj')">Sun TV India</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=starmaa_raj')">Starmaa HD</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=starmaamovies_raj')">Starmaa Movies HD</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=Bollyone')">Bollyone</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=vijaysuper_raj')">Vijay Super</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=Vellithirai')">Vellithirai</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=ch3_pat')">Channel 3 Thailand</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=ch5_pat')">Channel 5 Thailand</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=ch7_pat')">Channel 7 Thailand</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=mcot_pat')">MCOT HD Thailand-1</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=pptv_pat')">PPTV Thailand1</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=thaithai_pat')">Thai Thai</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=amarin_pat')">Amarin</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=ch8_pat')">Ch 8</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=gmmone_pat')">GmmOne</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=mono_pat')">Mono</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=thairath_pat')">Thairath</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=tpbs_pat')">tpbs</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=workpoint_pat')">Workpoint</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=gmmchannel_pat')">Gmm Channel</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=nation_pat')">Nation</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=tnn24_pat')">Tnn24</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=nbt_pat')">Nbt</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=new_pat')">New</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=tptv_pat')">TPTV</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=bbc1_antik')">BBC 1</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=bbc2_antik')">BBC 2</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=cbbc_antik')">CBBC</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=more4_antik')">More4</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=freesports_antik')">Freesports</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=picktv_antik')">Pick TV</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=itv1_antik')">itv 1</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=itv2_antik')">itv 2</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=euronews_antik')">Euronews</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=channel4_antik')">Channel 4</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=bbcworldnews_antik')">BBC World News</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=viet_antv')">ANTV</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=viet_vtv1')">VTV 1</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=viet_vtv7')">VTV 7</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=viet_htv7')">HTV 7</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=viet_htv9')">HTV 9</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=viet_bptv2')">BPTV 2</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=viet_brt')">BRT HD</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=viet_camautv')">Ca Mau TV</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=viet_danangtv1')">Danang TV1 HD</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=viet_danangtv2')">Danang TV2 HD</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=viet_hbtv')">HBTV HD</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=viet_ptth1')">PTTH 1</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=arirang_korea')">Arirang HD</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=yonhapnews_korea')">Yonhap News</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=cbs_korea')">CBS</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=ebs1_korea')">EBS 1</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=ebs2_korea')">EBS2</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=ebsplus2_korea')">EBS Plus2</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=sbsplus_korea')">SBS Plus</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=ytn_korea')">YTN</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=kbsworld24_korea')">KBS World 24</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=ytnscience_korea')">YTN Science</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=ytnkorean_korea')">YTN Korean</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=ytndmb_korea')">YTN DMB</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=appongoogle_korea')">Apps TV</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=allthekpop_korea')">All the Kpop</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=jthekpop_korea')">J the Kpop</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=ebskids_korea')">EBS Kids</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=cgntv_korea')">CGNTV</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=nhkg_japan')">NHK-総合-2</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=nhke_japan')">NHK-E</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=asahitv_japan')">テレビ朝日 Asahi TV</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=jettv_japan')">JET 綜合</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=tokyotv_japan')">テレビ東京 Tokyo TV</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=tokyomx_japan')">TOKYOMX</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=nhkbs1_japan')">NHKBS1</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=nhkpremium_japan')">NHKBSプレミア Premium</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=bs181_japan')">BSジャパン 181</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=bsfuji_japan')">BSフジ BS Fuji</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=cna_japan')">CNA Japan</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=bstbs_japan')">BS-TBS</button></div>
+        <div class="channel"><button onclick="play('https://vjs.zencdn.net/Smart.php?id=nhkosaka_japan')">NHK Oaska</button></div>
+
+    </div>
+    <div id="video-box">
+        <video id="iptv-player" class="video-js vjs-default-skin" controls autoplay width="800" height="450">
+            <source src="" type="application/x-mpegURL" />
+        </video>
+    </div>
+
+    <script src="https://vjs.zencdn.net/8.5.2/video.min.js"></script>
+    <script>
+        const player = videojs('iptv-player');
+        function play(url) {
+            player.src({ type: 'application/x-mpegURL', src: url });
+            player.play();
+        }
+
+        function filterChannels() {
+            const keyword = document.getElementById("search").value.toLowerCase();
+            document.querySelectorAll('.channel').forEach(div => {
+                const text = div.textContent.toLowerCase();
+                div.style.display = text.includes(keyword) ? "" : "none";
+            });
+        }
+    </script>
+</body>
+</html>
