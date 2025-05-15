@@ -1,0 +1,6 @@
+{
+            "name": "MQ",
+            "api": "csp_MQiTV",
+            "jar": "./1.jar",
+            "ext": "https://59.125.210.231:4433"
+        }
